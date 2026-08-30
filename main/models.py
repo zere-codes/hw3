@@ -35,13 +35,11 @@ class Review(models.Model):
     username = models.CharField(max_length=100)
     comment = models.TextField(blank=True)
     stars = models.IntegerField(default=5)
-    recommended=models.CharField(max_length=3)
+    recommended=models.CharField(max_length=3, default='да')
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-
-
-
+    def __str__(self):
+        return f"{self.username} -> {self.app.name}"
 
 
 
