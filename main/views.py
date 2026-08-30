@@ -6,12 +6,5 @@ def hw(request):
     return HttpResponse("This is my home work")
 
 def index(request):
-    apps = App.objects.order_by('-created_at').all()
-    featured = App.objects.order_by('-price').first()
-    categories = Category.objects.all()
-
-    return render(request, 'main/index.html', {
-        'apps': apps,
-        'featured': featured,
-        'categories': categories,
-    })
+    app = App.objects.first()
+    return HttpResponse(f"Приложение дня: {app.name}")
