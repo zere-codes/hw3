@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/style.css' %}">
+    <title>{% block title %}AppStore{% endblock %}</title>
+   <nav>
+            <a href="{% url 'index' %}">Главная</a>
+            <a href="{% url 'about' %}">О магазине</a>
+            <a href="{% url 'reviews' %}">Отзывы</a>
+        </nav>
+
+</head>
+<body>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

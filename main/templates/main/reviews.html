@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Отзывы{% endblock %}
+
+{% block content %}
+
+     <h2>Отзывы о приложениях</h2>
+
+    <ul>
+    {% for review in reviews %}
+        <li>
+            <strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>
+            <br>
+            Звезды - {{review.stars}} из 5
+            <br>
+             {% if review.comment %}
+               {{ review.comment }}
+            {% endif %}
+            <br>
+            {% if review.recommended == 'да' %}
+              Рекомендует
+            {% else %}
+                Не рекомендует
+            {% endif %}
+        </li>
+  {% empty %}
+      <li>Отзывов пока нет.</li>
+  {% endfor %}
+    </ul>
+
+    <p>Всего отзывов: {{ reviews|length }}</p>
+
+{% endblock %}
