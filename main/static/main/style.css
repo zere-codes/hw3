@@ -10,6 +10,9 @@ body {
 nav a {
     margin-right: 15px;
     display: inline-block;
+    background-color: lightblue;
+    padding:8px;
+    border-radius: 12px;
 }
 
 ul {
