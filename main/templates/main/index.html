@@ -6,10 +6,16 @@
 
      <h2>Приложения в магазине</h2>
 
+        {% for category in categories %}
+            <a href="{% url 'category' category.id %}">{{ category.name }}</a>
+           ({{category.app_set.count}}){% if not forloop.last %} . {%endif%}
+        {% endfor %}
+
+
     <ul>
     {% for app in apps %}
         <li>
-            <strong>{{ app.name }}</strong> — {{ app.category }}<br>
+            <strong><a href="{% url 'app_detail' app.id %}">{{app.name}}</a></strong> — {{ app.category }}<br>
             {{ app.description|truncatechars:60 }}<br>
             <br>
             Размер - {{app.weight_unit}}

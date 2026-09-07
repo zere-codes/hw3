@@ -9,8 +9,7 @@
     <ul>
     {% for review in reviews %}
         <li>
-            <strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>
-            <br>
+            <strong>{{ review.username }}</strong> — Приложение:<a href="{% url 'app_detail' review.app.id %}">{{review.app.name}}</a></li><br>
             Звезды - {{review.stars}} из 5
             <br>
              {% if review.comment %}

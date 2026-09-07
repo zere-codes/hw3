@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Бесплатные приложения{% endblock %}
+
+{% block content %}
+
+
+    <ul>
+    {% for app in apps %}
+        <li>
+            <strong><a href="{% url 'app_detail' app.id %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+            {{ app.description|truncatechars:60 }}<br>
+            <br>
+            Размер - {{app.weight_unit}}
+            <br>
+            добавлено {{ app.created_at|date:"d.m.Y" }}
+        </li>
+    {% empty %}
+        <li>Бесплатных приложений пока нет.</li>
+    {% endfor %}
+    </ul>
+
+    <p>Всего приложений: {{ apps|length }}</p>
+
+{% endblock %}

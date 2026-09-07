@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ app.name }} — AppStore{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'index' %}">← ко всем приложениям</a></p>
+
+    <h2>{{ app.name }}</h2>
+
+    <p>Категория: {{ app.category|default:"без категории" }}</p>
+
+<p> Описание: {{ app.description|default:"Описание пока не добавлено." }}</p>
+
+
+    <p>Цена:
+        {% if app.price == 0 %}
+            Бесплатно
+        {% else %}
+            Цена: {{ app.price }} $
+        {% endif %}
+    </p>
+
+
+Размер - {{app.weight_unit}}
+<p>Добавлено: {{ app.created_at|date:"d.m.Y H:i" }}</p>
+<h3>Отзывы</h3>
+{% for review in app.review_set.all %}
+<strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>
+            <br>
+            Звезды - {{review.stars}} из 5
+            <br>
+             {% if review.comment %}
+               {{ review.comment }}
+            {% endif %}
+            <br>
+            {% if review.recommended == 'да' %}
+              Рекомендует
+            {% else %}
+                Не рекомендует
+            {% endif %}
+{% empty %}
+        <li>Отзывов пока нет</li>
+{% endfor%}
+
+<p>Всего отзывов:{{ app.review_set.count }}</p>
+
+
+
+
+{% endblock %}
