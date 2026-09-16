@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Новинки{% endblock %}
+
+{% block content %}
+
+
+    <ul>
+    {% for app in page_obj %}
+        <li>
+            <strong><a href="{% url 'app_detail' app.id %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+            {{ app.description|truncatechars:60 }}<br>
+            <br>
+            Размер - {{app.weight_unit}}
+            <br>
+            добавлено {{ app.created_at|date:"d.m.Y" }}
+        </li>
+    {% empty %}
+        <li>Новинок пока нет.</li>
+    {% endfor %}
+    </ul>
+  <p>
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}&q={{ q }}"><-назад</a>
+    {% endif %}
+
+    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&sort={{ sort }}&q={{ q }}">вперёд-></a>
+    {% endif %}
+</p>
+
+
+
+{% endblock %}

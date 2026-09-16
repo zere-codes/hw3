@@ -10,4 +10,5 @@ urlpatterns=[
     path('category/<int:category_id>/', views.category_detail, name='category'),
     path('app_detail/<int:app_id>/', views.app_detail, name='app_detail'),
     path('free/', views.free, name='free'),
+    path('new/', views.new, name='new'),
 ]

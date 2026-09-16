@@ -6,9 +6,12 @@
     <p><a href="{% url 'index' %}">← ко всем приложениям</a></p>
 
     <h2>Категория: {{ category.name }}</h2>
-
+    <form method="GET" action="{% url 'category'  category.id %}">
+    <input type="text" name="q" placeholder="Поиск приложений..." value="{{ q }}">
+    <button type="submit">Найти</button>
+</form>
     <ul>
-    {% for app in apps %}
+    {% for app in page_obj %}
         <li>
             <a href="{% url 'app_detail' app.id %}">{{ app.name }}</a> —
             {% if app.price == 0 %}
@@ -21,6 +24,16 @@
         <li>В этой категории пока нет приложений</li>
     {% endfor %}
     </ul>
+    <p>
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}&q={{ q }}"><-назад</a>
+    {% endif %}
 
-    <p>Всего в категории: {{ apps|length }}</p>
+    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&sort={{ sort }}&q={{ q }}">вперёд-></a>
+    {% endif %}
+</p>
+
 {% endblock %}
