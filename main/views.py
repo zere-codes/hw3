@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
 from main.models import App, Category, Review
 from django.db.models import Q
@@ -60,13 +60,20 @@ def category_detail(request, category_id):
         'q': q,
     })
 
-def app_detail(request, app_id):
+def app_detail(request, app_id, app_name):
     app = get_object_or_404(App, id=app_id)
+
+    if app_name != app.name:
+        return redirect('main:app_detail', app.id, app.name)
+
+
+    print(app_name)
 
     return render(request, 'main/app_detail.html', {
         'app': app,
 
     })
+
 
 
 

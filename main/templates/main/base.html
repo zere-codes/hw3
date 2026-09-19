@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="{% static 'main/style.css' %}">
     <title>{% block title %}AppStore{% endblock %}</title>
    <nav>
-            <a href="{% url 'index' %}">Главная</a>
-            <a href="{% url 'about' %}">О магазине</a>
-            <a href="{% url 'reviews' %}">Отзывы</a>
-            <a href="{% url 'free' %}">Бесплатные</a>
-            <a href="{% url 'new' %}">Новинки</a>
+            <a href="{% url 'main:index' %}">Главная</a>
+            <a href="{% url 'main:about' %}">О магазине</a>
+            <a href="{% url 'main:reviews' %}">Отзывы</a>
+            <a href="{% url 'main:free' %}">Бесплатные</a>
+            <a href="{% url 'main:new' %}">Новинки</a>
         </nav>
 
 

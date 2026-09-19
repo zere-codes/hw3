@@ -8,18 +8,18 @@
 
 
         {% for category in categories %}
-            <a href="{% url 'category' category.id %}">{{ category.name }}</a>
+            <a href="{% url 'main:category' category.id %}">{{ category.name }}</a>
            ({{category.app_set.count}}){% if not forloop.last %} . {%endif%}
         {% endfor %}
 
-     <form method="GET" action="{% url 'index' %}">
+     <form method="GET" action="{% url 'main:index' %}">
     <input type="text" name="q" placeholder="Поиск приложений..." value="{{ q }}">
     <button type="submit">Найти</button>
 
     <ul>
     {% for app in apps %}
         <li>
-            <strong><a href="{% url 'app_detail' app.id %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+            <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
             {{ app.description|truncatechars:60 }}<br>
             <br>
             Размер - {{app.weight_unit}}

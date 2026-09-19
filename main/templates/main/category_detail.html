@@ -3,17 +3,17 @@
 {% block title %}{{ category.name }} — AppStore{% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'index' %}">← ко всем приложениям</a></p>
+    <p><a href="{% url 'main:index' %}">← ко всем приложениям</a></p>
 
     <h2>Категория: {{ category.name }}</h2>
-    <form method="GET" action="{% url 'category'  category.id %}">
+    <form method="GET" action="{% url 'main:category'  category.id %}">
     <input type="text" name="q" placeholder="Поиск приложений..." value="{{ q }}">
     <button type="submit">Найти</button>
 </form>
     <ul>
     {% for app in page_obj %}
         <li>
-            <a href="{% url 'app_detail' app.id %}">{{ app.name }}</a> —
+            <a href="{% url 'main:app_detail' app.id app.name%}">{{ app.name }}</a> —
             {% if app.price == 0 %}
           Бесплатно
           {% else %}
