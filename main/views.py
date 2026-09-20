@@ -16,16 +16,20 @@ def index(request):
 
 
     if q:
-        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q))
+        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q)).order_by('name')
 
     else:
         apps = App.objects.order_by('-created_at')
 
+    paginator = Paginator(apps, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'main/index.html', {
-        'apps': apps,
+        'page_obj': page_obj,
         'categories': categories,
         'q': q,
+
     })
 
 def about(request):
@@ -84,7 +88,7 @@ def free(request):
     return render(request, 'main/free.html' , {'apps': apps})
 
 def new(request):
-    apps = App.objects.order_by('-created_at')[:5]
+    apps = App.objects.order_by('-created_at')
     paginator = Paginator(apps, 3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -93,7 +97,6 @@ def new(request):
 
 
     return render(request, 'main/new.html', {
-        'apps': apps,
         'page_obj': page_obj,
 
     })
