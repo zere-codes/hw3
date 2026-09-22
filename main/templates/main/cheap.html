@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>{% extends 'main/base.html' %}
+
+
+
+
+
+{% block content %}
+
+
+    <ul>
+    {% for app in page_obj %}
+        <li>
+            <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+            {{ app.description|truncatechars:60 }}<br>
+            <br>
+            Размер - {{app.weight_unit}}
+            <br>
+            Цена: {{app.price}}
+            <br>
+            добавлено {{ app.created_at|date:"d.m.Y" }}
+        </li>
+    {% empty %}
+        {% if request.resolver_match.url_name == 'premium_apps' and request.resolver_match.kwargs.premium_apps == premium_apps %}
+        <li>Дорогих пока нет</li>
+{%else%} <li>Дешевых пока нет</li>
+{% endif %}
+    {% endfor %}
+    </ul>
+  <p>
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}&q={{ q }}"><-назад</a>
+    {% endif %}
+
+    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&sort={{ sort }}&q={{ q }}">вперёд-></a>
+    {% endif %}
+</p>
+
+
+
+{% endblock %}

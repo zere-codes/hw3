@@ -11,7 +11,16 @@
             <a href="{% url 'main:reviews' %}">Отзывы</a>
             <a href="{% url 'main:free' %}">Бесплатные</a>
             <a href="{% url 'main:new' %}">Новинки</a>
+            <a href="{% url 'main:premium_apps' %}">Дорогие</a>
+
+            <a href="{% url 'main:cheap_apps' %}">Дешевые</a>
         </nav>
+
+        {% for category in categories %}
+            <a href="{% url 'main:category' category.id %}">{{ category.name }}</a>
+           ({{category.app_set.count}}){% if not forloop.last %} . {%endif%}
+        {% endfor %}
+
 
 
 
