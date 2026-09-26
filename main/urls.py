@@ -16,7 +16,6 @@ urlpatterns=[
     path('free/', views.free, name='free'),
     path('new/', views.new, name='new'),
     path('api/review_detail/<int:review_id>/', views.review_detail, name='review_detail'),
-    path('cheap/', views.cheap, name='cheap'),
     path('cheap/', views.cheap_apps, {'max_price':500}, name='cheap_apps'),
     path('premium/', views.cheap_apps, {'min_price': 5000}, name='premium_apps'),
 ]

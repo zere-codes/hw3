@@ -15,6 +15,8 @@ from django.views.generic import TemplateView, ListView, DetailView
 @require_GET
 def hw(request):
     return HttpResponse("This is my homework")
+
+
 class AppListView(ListView):
     model = App
     template_name = 'main/index.html'
@@ -33,8 +35,10 @@ class AppListView(ListView):
 
         return apps
 
+
 class AboutView(TemplateView):
     template_name = 'main/about.html'
+
 
 
 class AppDetailView(DetailView):
@@ -43,12 +47,15 @@ class AppDetailView(DetailView):
     context_object_name = 'app'
     pk_url_kwarg = 'app_id'
 
-    def get_object(self):
-        app=super().get_object()
+    def get(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app = self.object
         if app.name!=self.kwargs['app_name']:
             return redirect('main:app_detail', app.id, app.name)
         return app
 
+
+@require_GET
 def review_detail(request, review_id):
     review = get_object_or_404(Review, id=review_id)
 
@@ -67,12 +74,35 @@ def review_detail(request, review_id):
 
 
 
+class AppDetailView(DetailView):
+    model = App
+    template_name = 'main/app_detail.html'
+    context_object_name = 'app'
+    pk_url_kwarg = 'app_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app = self.object
+
+        context['similar'] = (
+            App.objects.filter(
+                price__gte=app.price - 10,
+                price__lte=app.price + 10,
+            )
+            .exclude(id=app.id)[:3]
+        )
+        context['form']=ReviewForm()
+        context['reviews']=app.review_set.order_by('-created_at')
+        return context
 
 
+@require_GET
 def reviews(request):
     reviews=Review.objects.all()
     return render(request, 'main/reviews.html', {'reviews': reviews})
 
+
+@require_GET
 def category_detail(request, category_id):
     categories = Category.objects.all()
     category = get_object_or_404(Category, id=category_id)
@@ -145,9 +175,9 @@ def cheap(request):
 
 def cheap_apps(request, min_price=None, max_price=None):
     if min_price is not None:
-        apps = App.objects.filter(price__gte=500)
+        apps = App.objects.filter(price__lte=500)
     elif max_price is not None:
-        apps = App.objects.filter(price__lte=5000)
+        apps = App.objects.filter(price__gte=5000)
 
     paginator = Paginator(apps, 3)
     page_number = request.GET.get('page')
