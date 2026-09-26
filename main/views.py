@@ -48,11 +48,11 @@ class AppDetailView(DetailView):
     pk_url_kwarg = 'app_id'
 
     def get(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
+        self.object = self.get_object()
         app = self.object
         if app.name!=self.kwargs['app_name']:
             return redirect('main:app_detail', app.id, app.name)
-        return app
+        return super().get(request, *args, **kwargs)
 
 
 @require_GET
@@ -72,28 +72,6 @@ def review_detail(request, review_id):
     return JsonResponse(data)
 
 
-
-
-class AppDetailView(DetailView):
-    model = App
-    template_name = 'main/app_detail.html'
-    context_object_name = 'app'
-    pk_url_kwarg = 'app_id'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        app = self.object
-
-        context['similar'] = (
-            App.objects.filter(
-                price__gte=app.price - 10,
-                price__lte=app.price + 10,
-            )
-            .exclude(id=app.id)[:3]
-        )
-        context['form']=ReviewForm()
-        context['reviews']=app.review_set.order_by('-created_at')
-        return context
 
 
 @require_GET
@@ -127,31 +105,16 @@ def category_detail(request, category_id):
         'page_obj': page_obj,
         'q': q,
     })
-#
-# def app_detail(request, app_id, app_name):
-#     app = get_object_or_404(App, id=app_id)
-#
-#     if app_name != app.name:
-#         return redirect('main:app_detail', app.id, app.name)
-#
-#
-#     print(app_name)
-#
-#     return render(request, 'main/app_detail.html', {
-#         'app': app,
-#
-#     })
 
 
 
 
-
-
-
+@require_GET
 def free(request):
     apps=App.objects.filter(price=0)
     return render(request, 'main/free.html' , {'apps': apps})
 
+@require_GET
 def new(request):
     apps = App.objects.order_by('-created_at')
     paginator = Paginator(apps, 3)
@@ -166,18 +129,13 @@ def new(request):
 
     })
 
-def cheap(request):
-    apps = App.objects.filter(price__lte=500)
-    paginator = Paginator(apps, 3)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'main/cheap.html', {'page_obj': page_obj})
 
+@require_GET
 def cheap_apps(request, min_price=None, max_price=None):
     if min_price is not None:
-        apps = App.objects.filter(price__lte=500)
+        apps = App.objects.filter(price__gte=min_price)
     elif max_price is not None:
-        apps = App.objects.filter(price__gte=5000)
+        apps = App.objects.filter(price__lte=max_price)
 
     paginator = Paginator(apps, 3)
     page_number = request.GET.get('page')
