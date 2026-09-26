@@ -38,11 +38,25 @@
             {% else %}
                 Не рекомендует
             {% endif %}
+<br>
 {% empty %}
         <li>Отзывов пока нет</li>
 {% endfor%}
 
 <p>Всего отзывов:{{ app.review_set.count }}</p>
+
+<br>
+<section>
+    <h2>Оставить отзыв</h2>
+
+    <form method="post" action="{% url 'main:add_review' app.id %}">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">Отправить отзыв</button>
+    </form>
+</section>
 
 
 

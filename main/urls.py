@@ -18,5 +18,6 @@ urlpatterns=[
     path('api/review_detail/<int:review_id>/', views.review_detail, name='review_detail'),
     path('cheap/', views.cheap_apps, {'max_price':500}, name='cheap_apps'),
     path('premium/', views.cheap_apps, {'min_price': 5000}, name='premium_apps'),
+    path('add_review/<int:app_id>', views.add_review, name='add_review'),
 ]
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
-
+from .forms import ReviewForm
 
 
 
@@ -49,10 +49,43 @@ class AppDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        app = self.object
-        if app.name!=self.kwargs['app_name']:
-            return redirect('main:app_detail', app.id, app.name)
+
+        if self.object.name != self.kwargs['app_name']:
+            return redirect(
+                'main:app_detail',
+                self.object.id,
+                self.object.name
+            )
+
         return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['form'] = ReviewForm()
+        context['reviews'] = self.object.review_set.order_by('-created_at')
+
+        return context
+
+@require_POST
+def add_review(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review=form.save(commit=False)
+        review.app=app
+        review.save()
+        return redirect('main:app_detail', app_id=app.id, app_name=app.name)
+
+    reviews = app.review_set.order_by('-created_at')
+    return render(request, 'main/app_detail.html',
+    {
+        'reviews': reviews,
+        'app': app,
+        'form': form,
+        })
+
+
 
 
 @require_GET
