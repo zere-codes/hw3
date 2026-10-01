@@ -31,11 +31,15 @@ class ReviewForm(forms.ModelForm):
         stars=self.cleaned_data['stars']
         recommended=self.cleaned_data['recommended']
         comment=self.cleaned_data['comment']
+        if stars is None:
+            raise forms.ValidationError('Введите оценку')
+
         if stars<=0 or stars>5:
             raise forms.ValidationError('Оценка должна быть от 1 до 5.')
         if stars<3 and recommended=='да':
             raise forms.ValidationError('Вы не можете рекомендовать приложение если оценили его меньше 3 из 5 ')
         if len(comment)>600:
             raise forms.ValidationError('Комментарий не может превышать 600 символов')
+
 
 

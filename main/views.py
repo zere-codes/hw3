@@ -109,15 +109,13 @@ def review_detail(request, review_id):
 
 @require_GET
 def reviews(request):
-    reviews=Review.objects.all()
+    reviews=Review.objects.all().order_by('-created_at')
     return render(request, 'main/reviews.html', {'reviews': reviews})
 
 
 @require_GET
 def category_detail(request, category_id):
-    categories = Category.objects.all()
     category = get_object_or_404(Category, id=category_id)
-    apps = App.objects.filter(category=category)
     q = request.GET.get('q', '')
 
     if q:
@@ -133,7 +131,6 @@ def category_detail(request, category_id):
 
     return render(request, 'main/category_detail.html', {
         'category': category,
-        'categories': categories,
         'apps': apps,
         'page_obj': page_obj,
         'q': q,
@@ -176,4 +173,5 @@ def cheap_apps(request, min_price=None, max_price=None):
 
 
     return render(request, 'main/cheap.html', {'page_obj': page_obj})
+
 

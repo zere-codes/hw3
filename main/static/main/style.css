@@ -30,3 +30,9 @@ li {
 form {
     margin: 20px auto;
 }
+
+.nav_categories a.active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
