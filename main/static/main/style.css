@@ -36,3 +36,15 @@ form {
     text-decoration: underline;
 }
 
+.small-icon{
+    width:35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.big-icon{
+    width:80px;
+    height: 80px;
+    object-fit: contain;
+}
+

@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
-from .forms import ReviewForm
+from .forms import ReviewForm, AppForm
 
 
 
@@ -175,3 +175,16 @@ def cheap_apps(request, min_price=None, max_price=None):
     return render(request, 'main/cheap.html', {'page_obj': page_obj})
 
 
+def edit_app(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    if request.method == 'POST':
+        app_form = AppForm(request.POST, request.FILES, instance=app)
+        if app_form.is_valid():
+            app = app_form.save()
+            return redirect('main:app_detail',app_id=app.id,app_name=app.name)
+
+
+    else:
+        app_form = AppForm(instance=app)
+
+    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app})

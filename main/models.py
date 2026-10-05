@@ -17,6 +17,7 @@ class App(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     weight_kb = models.IntegerField(blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    icon = models.ImageField(upload_to='icons/', blank=True)
 
     def __str__(self):
         return self.name

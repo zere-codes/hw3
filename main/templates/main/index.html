@@ -16,6 +16,12 @@
     {% for app in page_obj %}
         <li>
             <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+
+            {%if app.icon%}
+                <p><img src="{{app.icon.url}}" alt="{{app.name}}" class ='small-icon'></p>
+            {%else%}
+                <p>нет пока </p>
+            {%endif%}
             {{ app.description|truncatechars:60 }}<br>
             <br>
             Размер - {{app.weight_unit}}

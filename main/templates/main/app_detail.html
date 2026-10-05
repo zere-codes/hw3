@@ -7,7 +7,16 @@
 
     <h2>{{ app.name }}</h2>
 
+
+
     <p>Категория: {{ app.category|default:"без категории" }}</p>
+
+
+    {%if app.icon%}
+        <p><img src="{{app.icon.url}}" alt="{{app.name}}" class ='big-icon'></p>
+    {%else%}
+        <p>Иконка пока не загружена </p>
+    {%endif%}
 
 <p> Описание: {{ app.description|default:"Описание пока не добавлено." }}</p>
 
@@ -23,6 +32,18 @@
 
 Размер - {{app.weight_unit}}
 <p>Добавлено: {{ app.created_at|date:"d.m.Y H:i" }}</p>
+
+<section>
+    <h2>Редактировать</h2>
+
+    <form method="post" action="{% url 'main:edit_app' app.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ app_form.as_p }}
+
+    <button type="submit">Сохранить</button>
+</form>
+</section>
+
 <h3>Отзывы</h3>
 {% for review in app.review_set.all %}
 <strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>
