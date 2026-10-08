@@ -3,7 +3,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="{% static 'main/style.css' %}">
+
+
+
+</head>
+
+
+<body>
+
+<link rel="stylesheet" href="{% static 'main/style.css' %}">
     <title>{% block title %}AppStore{% endblock %}</title>
    <nav>
             <a href="{% url 'main:index' %}">Главная</a>
@@ -30,12 +38,6 @@
     </p>
 
 
-
-
-</head>
-
-
-<body>
 
     {% block content %}
     {% endblock %}
