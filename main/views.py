@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponse, Http404
@@ -8,7 +9,11 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
-from .forms import ReviewForm, AppForm
+from .forms import ReviewForm, AppForm, UserRegistrationForm
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+from django.contrib import messages
 
 
 
@@ -46,7 +51,6 @@ class AppDetailView(DetailView):
     template_name = 'main/app_detail.html'
     context_object_name = 'app'
     pk_url_kwarg = 'app_id'
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
@@ -64,10 +68,11 @@ class AppDetailView(DetailView):
 
         context['form'] = ReviewForm()
         context['reviews'] = self.object.review_set.order_by('-created_at')
+        context['app_form'] = AppForm(instance=self.object)
 
         return context
 
-@require_POST
+@login_required
 def add_review(request, app_id):
     app = get_object_or_404(App, id=app_id)
     form = ReviewForm(request.POST)
@@ -174,7 +179,7 @@ def cheap_apps(request, min_price=None, max_price=None):
 
     return render(request, 'main/cheap.html', {'page_obj': page_obj})
 
-
+@login_required
 def edit_app(request, app_id):
     app = get_object_or_404(App, id=app_id)
     if request.method == 'POST':
@@ -188,3 +193,35 @@ def edit_app(request, app_id):
         app_form = AppForm(instance=app)
 
     return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app})
+
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('main:index')
+
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Вы успешно зарегистрировались!')
+            return redirect('main:index')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'main/register.html', {'form': form})
+
+
+class LoginView(LoginView):
+    template_name = 'main/login.html'
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Вы успешно вошли!')
+        return super().form_valid(form)
+
+
+
+class LogoutView(LogoutView):
+    next_page = reverse_lazy('main:index')
+

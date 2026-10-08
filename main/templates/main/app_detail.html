@@ -33,16 +33,18 @@
 Размер - {{app.weight_unit}}
 <p>Добавлено: {{ app.created_at|date:"d.m.Y H:i" }}</p>
 
-<section>
-    <h2>Редактировать</h2>
+{% if user.is_authenticated %}
+    <section>
+        <h2>Редактировать</h2>
 
-    <form method="post" action="{% url 'main:edit_app' app.id %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ app_form.as_p }}
+        <form method="post" action="{% url 'main:edit_app' app.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ app_form.as_p }}
 
-    <button type="submit">Сохранить</button>
-</form>
-</section>
+        <button type="submit">Сохранить</button>
+    </form>
+    </section>
+{% endif %}
 
 <h3>Отзывы</h3>
 {% for review in app.review_set.all %}
@@ -67,19 +69,21 @@
 <p>Всего отзывов:{{ app.review_set.count }}</p>
 
 <br>
-<section>
-    <h2>Оставить отзыв</h2>
+{% if user.is_authenticated %}
+    <section>
+        <h2>Оставить отзыв</h2>
 
-    <form method="post" action="{% url 'main:add_review' app.id %}">
-        {% csrf_token %}
+        <form method="post" action="{% url 'main:add_review' app.id %}">
+            {% csrf_token %}
 
-        {{ form.as_p }}
+            {{ form.as_p }}
 
-        <button type="submit">Отправить отзыв</button>
-    </form>
-</section>
-
-
-
+            <button type="submit">Отправить отзыв</button>
+        </form>
+    </section>
+{%else %}
+    <p>Войдите в аккаунт чтобы оставить отзыв!</p>
+    <a href="{% url 'main:add_review' app.id %}">Войти</a>
+{%endif %}
 
 {% endblock %}

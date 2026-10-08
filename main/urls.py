@@ -20,5 +20,8 @@ urlpatterns=[
     path('premium/', views.cheap_apps, {'min_price': 5000}, name='premium_apps'),
     path('add_review/<int:app_id>', views.add_review, name='add_review'),
     path('edit_app/<int:app_id>/', views.edit_app, name='edit_app'),
+    path('register/', views.register, name='register'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
 ]
 

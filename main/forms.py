@@ -1,4 +1,8 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 from .models import Review, App
 
 
@@ -29,20 +33,28 @@ class ReviewForm(forms.ModelForm):
         }
 
     def clean(self):
-        stars=self.cleaned_data['stars']
-        recommended=self.cleaned_data['recommended']
-        comment=self.cleaned_data['comment']
-        if stars is None:
-            raise forms.ValidationError('Введите оценку')
+        recommended=self.cleaned_data.get('recommended')
+        stars = self.cleaned_data.get('stars')
+        comment=self.cleaned_data.get('comment')
 
-        if stars<=0 or stars>5:
-            raise forms.ValidationError('Оценка должна быть от 1 до 5.')
-        if stars<3 and recommended=='да':
-            raise forms.ValidationError('Вы не можете рекомендовать приложение если оценили его меньше 3 из 5 ')
+        if stars is not None and stars < 3 and recommended == 'да':
+            raise forms.ValidationError(
+                'Вы не можете рекомендовать приложение если оценили его меньше 3 из 5'
+            )
         if len(comment)>600:
             raise forms.ValidationError('Комментарий не может превышать 600 символов')
 
+    def clean_stars(self):
+        stars = self.cleaned_data.get('stars')
 
+        if stars is None:
+            raise forms.ValidationError('Введите оценку')
+
+        if stars < 1 or stars > 5:
+            raise forms.ValidationError(
+                'Оценка должна быть от 1 до 5.'
+            )
+        return stars
 
 class AppForm(forms.ModelForm):
     class Meta:
@@ -56,3 +68,26 @@ class AppForm(forms.ModelForm):
             'category': 'категория',
             'icon': 'картинка',
         }
+
+class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField()
+    username = forms.CharField()
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label='Имя'
+        self.fields['email'].label='email'
+        self.fields['password1'].label = 'Пароль'
+        self.fields['password2'].label = 'Повтор'
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError('Уже есть пользователь с такой почтой')
+        return email
+
+
+
