@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Мои приложения — AppStore{% endblock %}
+
+{% block content %}
+
+     <h2>Приложения, опубликованные вами</h2>
+
+
+    <ul>
+    {% for app in apps %}
+        <li>
+            <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+
+            {%if app.icon%}
+                <p><img src="{{app.icon.url}}" alt="{{app.name}}" class ='small-icon'></p>
+            {%else%}
+                <p>нет пока </p>
+            {%endif%}
+            {{ app.description|truncatechars:60 }}<br>
+            <br>
+            Размер - {{app.weight_unit}}
+            <br>
+             {% if app.price == 0 %}
+                Бесплатно
+            {% else %}
+                {{ app.price }} $
+            {% endif %}
+            <br>
+            добавлено {{ app.created_at|date:"d.m.Y" }}
+        </li>
+
+
+    {% empty %}
+        <li>Вы еще не опубликовали ни одного приложения</li>
+    {% endfor %}
+
+    </ul>
+
+
+
+{% endblock %}
+
+

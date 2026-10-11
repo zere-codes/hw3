@@ -33,7 +33,13 @@
 Размер - {{app.weight_unit}}
 <p>Добавлено: {{ app.created_at|date:"d.m.Y H:i" }}</p>
 
-{% if user.is_authenticated %}
+Автор - {%if app.author%}
+            {{app.author.username}}
+        {%else%}
+            Не указан
+        {%endif%}
+{% if user.is_authenticated%}
+    {% if user.is_staff or app.author_id == user.id %}
     <section>
         <h2>Редактировать</h2>
 
@@ -44,6 +50,8 @@
         <button type="submit">Сохранить</button>
     </form>
     </section>
+{% endif %}
+
 {% endif %}
 
 <h3>Отзывы</h3>

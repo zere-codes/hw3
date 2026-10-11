@@ -38,7 +38,7 @@ class AppListView(ListView):
         else:
             apps = App.objects.order_by('-created_at')
 
-        return apps
+        return apps.select_related('author')
 
 
 class AboutView(TemplateView):
@@ -185,7 +185,12 @@ def cheap_apps(request, min_price=None, max_price=None):
 @login_required
 def edit_app(request, app_id):
     app = get_object_or_404(App, id=app_id)
-    if request.method == 'POST':
+    if not (
+            request.user.has_perm('main.change_app') or request.user.is_staff or app.author_id == request.user.id
+    ):
+        messages.error(request, 'Редактировать приложение может только её автор')
+        return redirect('main:app_detail', app_id=app.id)
+    if request.method == 'POST' :
         app_form = AppForm(request.POST, request.FILES, instance=app)
         if app_form.is_valid():
             app = app_form.save()
@@ -228,3 +233,22 @@ class LoginView(LoginView):
 class LogoutView(LogoutView):
     next_page = reverse_lazy('main:index')
 
+
+def add_app(request):
+    if request.method == 'POST':
+        form = AppForm(request.POST, request.FILES)
+        if form.is_valid():
+            app = form.save(commit=False)
+            app.author = request.user
+            app.save()
+            messages.success(request, f"Приложение успешно{app.name} опубликовано")
+            return redirect('main:app_detail', app_id=app.id, app_name=app.name)
+    else:
+        form = AppForm()
+    return render(request, 'main/add_app.html', {'form': form})
+
+
+@login_required
+def my_apps(request):
+    apps = App.objects.filter( author=request.user).order_by('-created_at')
+    return render(request, 'main/my_apps.html', {'apps': apps})

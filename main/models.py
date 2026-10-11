@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
@@ -18,6 +19,8 @@ class App(models.Model):
     weight_kb = models.IntegerField(blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     icon = models.ImageField(upload_to='icons/', blank=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='apps')
+
 
     def __str__(self):
         return self.name

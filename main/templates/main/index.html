@@ -13,7 +13,7 @@
     <button type="submit">Найти</button>
 
     <ul>
-    {% for app in page_obj %}
+    {% for app in apps %}
         <li>
             <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
 

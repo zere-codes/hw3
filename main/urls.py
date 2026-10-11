@@ -23,5 +23,7 @@ urlpatterns=[
     path('register/', views.register, name='register'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('add_app/', views.add_app, name='add_app'),
+    path('my_apps/', views.my_apps, name='my_apps'),
 ]
 
