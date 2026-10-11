@@ -9,10 +9,9 @@ from .models import Review, App
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields=['username', 'comment', 'stars', 'recommended']
+        fields=[ 'comment', 'stars', 'recommended']
 
         labels={
-            'username':'Имя',
             'comment':'комментарий о приложении ',
             'stars':'оценка',
             'recommended':'рекомендуете?',

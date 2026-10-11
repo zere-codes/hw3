@@ -83,7 +83,7 @@
     </section>
 {%else %}
     <p>Войдите в аккаунт чтобы оставить отзыв!</p>
-    <a href="{% url 'main:add_review' app.id %}">Войти</a>
+    <a href="{% url 'main:login' %}?next={{ request.path }}">Войти</a>
 {%endif %}
 
 {% endblock %}

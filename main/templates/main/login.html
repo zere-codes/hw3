@@ -7,6 +7,7 @@
     <p>Зайдите в аккаунт</p>
     <form method="post" action="{% url 'main:login' %}">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{next}}">
         {{ form.as_p }}
 
         <button type="submit">Войти</button>

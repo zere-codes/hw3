@@ -79,8 +79,11 @@ def add_review(request, app_id):
     if form.is_valid():
         review=form.save(commit=False)
         review.app=app
+        review.user=request.user
         review.save()
         return redirect('main:app_detail', app_id=app.id, app_name=app.name)
+    if request.user.is_authenticated and 'username' in form.fields:
+        form.fields.pop('username')
 
     reviews = app.review_set.order_by('-created_at')
     return render(request, 'main/app_detail.html',
