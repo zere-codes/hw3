@@ -81,7 +81,7 @@
     <section>
         <h2>Оставить отзыв</h2>
 
-        <form method="post" action="{% url 'main:add_review' app.id %}">
+        <form method="post" action="{% url 'main:add_review' app.id app.name%}">
             {% csrf_token %}
 
             {{ form.as_p }}

@@ -80,15 +80,15 @@ class AppDetailView(DetailView):
         return context
 
 @login_required
-def add_review(request, app_id):
+def add_review(request, app_id, app_name):
     app = get_object_or_404(App, id=app_id)
     form = ReviewForm(request.POST)
     if form.is_valid():
         review=form.save(commit=False)
         review.app=app
-        review.user=request.user
+        review.username=request.user.username
         review.save()
-        return redirect('main:app_detail', app_id=app.id, app_name=app.name)
+        return redirect('main:app_detail', app_id=app.id, app_name=app_name)
     if request.user.is_authenticated and 'username' in form.fields:
         form.fields.pop('username')
 
@@ -240,7 +240,7 @@ class LoginView(LoginView):
 class LogoutView(LogoutView):
     next_page = reverse_lazy('main:index')
 
-
+@login_required
 def add_app(request):
     if request.method == 'POST':
         form = AppForm(request.POST, request.FILES)
