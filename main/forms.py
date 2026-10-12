@@ -84,8 +84,12 @@ class UserRegistrationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        email = email.strip().lower()
+        if not email:
+            raise ValidationError('Введите адрес почты')
+        elif User.objects.filter(email=email).exists():
             raise ValidationError('Уже есть пользователь с такой почтой')
+
         return email
 
 

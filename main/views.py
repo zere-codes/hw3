@@ -14,7 +14,14 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib import messages
-
+from django.contrib.auth.views import (
+    LoginView,
+    LogoutView,
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
 
 
 @require_GET
@@ -183,18 +190,18 @@ def cheap_apps(request, min_price=None, max_price=None):
     return render(request, 'main/cheap.html', {'page_obj': page_obj})
 
 @login_required
-def edit_app(request, app_id):
+def edit_app(request, app_id, app_name):
     app = get_object_or_404(App, id=app_id)
     if not (
             request.user.has_perm('main.change_app') or request.user.is_staff or app.author_id == request.user.id
     ):
         messages.error(request, 'Редактировать приложение может только её автор')
-        return redirect('main:app_detail', app_id=app.id)
+        return redirect('main:app_detail', app_id=app.id, app_name=app_name)
     if request.method == 'POST' :
         app_form = AppForm(request.POST, request.FILES, instance=app)
         if app_form.is_valid():
             app = app_form.save()
-            return redirect('main:app_detail',app_id=app.id,app_name=app.name)
+            return redirect('main:app_detail',app_id=app.id, app_name=app_name)
 
 
     else:
@@ -252,3 +259,35 @@ def add_app(request):
 def my_apps(request):
     apps = App.objects.filter( author=request.user).order_by('-created_at')
     return render(request, 'main/my_apps.html', {'apps': apps})
+
+
+
+class StorePasswordResetView(PasswordResetView):
+    template_name = 'main/password_reset.html'
+    email_template_name = 'main/store_password_reset_email.html'
+    subject_template_name = 'main/store_password_reset_subject.txt'
+    success_url = reverse_lazy('main:password_reset_done')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['email'].label='Email'
+        return form
+
+class StorePasswordResetDoneView(PasswordResetDoneView):
+    template_name='main/store_password_reset_done.html'
+
+class StorePasswordResetConfirmView(PasswordResetConfirmView):
+    template_name='main/password_reset_confirm.html'
+    success_url=reverse_lazy('main:password_reset_complete')
+
+    def get_form(self, form_class=None):
+        form=super().get_form(form_class)
+        if form is not None and 'new_password1' in form.fields:
+            form.fields['new_password1'].label='Новый пароль'
+            form.fields['new_password2'].label='Повтор'
+        return form
+
+class StorePasswordResetCompleteView(PasswordResetCompleteView):
+    template_name='main/password_reset_complete.html'
+
+

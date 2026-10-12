@@ -39,11 +39,11 @@
             Не указан
         {%endif%}
 {% if user.is_authenticated%}
-    {% if user.is_staff or app.author_id == user.id %}
+    {% if user.is_staff or app.author_id == user.id or perms.main.change_app  %}
     <section>
         <h2>Редактировать</h2>
 
-        <form method="post" action="{% url 'main:edit_app' app.id %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'main:edit_app' app.id app.name %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ app_form.as_p }}
 
