@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Избранные - AppStore{% endblock %}
+
+{% block content %}
+    <h3>Избранные</h3>
+
+<ul>
+  <li>
+    <a href="{% url 'main:app_detail' app.id %}">{{ app.name }}</a>
+    <br>
+    {% if app.price == 0 %}
+    Бесплатно
+    {% else %}
+    {{ app.price }}
+    {% endif %}
+    <br>
+    Автор
+    {% if app.author %}
+    {{ app.author.username }}
+    {% else %}
+    не указан
+    {% endif %}
+    {% empty %}
+      Пока пусто. Добавьте первое избранное приложение
+  {% endif %}
+
+  </li>
+</ul>
+
+{% endblock %}

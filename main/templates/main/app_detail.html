@@ -54,6 +54,23 @@
 
 {% endif %}
 
+{% if user.is_authenticated %}
+-
+Добавить в избранные
+-
+ <form method="post" action="{% url 'main:toggle_favorite_app' app.id app.name %}">
+    {% csrf_token %}
+    {% if is_favorite %}
+     <button type="submit">убрать из избранного</button>
+    {% else %}
+     <button type="submit">в избранное</button>
+    {% endif %}
+ </form>
+{%else%}
+<p><a href="{% url 'main:login'%}?next={{ request.path }}">Войдите чтобы добавить приложение в избранное.</a></p>
+
+{%endif%}
+
 <h3>Отзывы</h3>
 {% for review in app.review_set.all %}
 <strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>

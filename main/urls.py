@@ -45,5 +45,8 @@ urlpatterns=[
         views.StorePasswordResetCompleteView.as_view(),
         name='password_reset_complete'
     ),
+
+    path('favorites/', views.favorites, name='favorites'),
+    path('app/<int:app_id>/<str:app_name>/favorite/', views.toggle_favorite_app, name='toggle_favorite_app'),
 ]
 
