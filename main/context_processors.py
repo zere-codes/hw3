@@ -19,3 +19,10 @@ def nav_categories(request):
             }
 
 
+def favorites_count(request):
+    if request.user.is_authenticated:
+        count = request.user.favorite_apps.count()
+    else:
+        count = 0
+
+    return {'favorites_count': count}

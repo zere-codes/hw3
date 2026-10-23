@@ -6,26 +6,15 @@
     <h3>Избранные</h3>
 
 <ul>
-  <li>
-    <a href="{% url 'main:app_detail' app.id %}">{{ app.name }}</a>
-    <br>
-    {% if app.price == 0 %}
-    Бесплатно
-    {% else %}
-    {{ app.price }}
-    {% endif %}
-    <br>
-    Автор
-    {% if app.author %}
-    {{ app.author.username }}
-    {% else %}
-    не указан
-    {% endif %}
-    {% empty %}
-      Пока пусто. Добавьте первое избранное приложение
-  {% endif %}
+ {% for app in apps %}
+        <li>
+            <a href="{% url 'main:app_detail' app.id app.name %}">{{ app.name }}</a>
 
-  </li>
+            автор: {% if app.author %}{{ app.author.username }}{% else %}не указан{% endif %}
+        </li>
+  {% empty %}
+    <li>В избранном пока пусто. Откройте карточку приложения и нажмите «В избранное».</li>
+  {% endfor %}
+
 </ul>
-
 {% endblock %}

@@ -87,7 +87,7 @@ class UserRegistrationForm(UserCreationForm):
         email = email.strip().lower()
         if not email:
             raise ValidationError('Введите адрес почты')
-        elif User.objects.email__iexact.exists():
+        elif User.objects.filter(email_iexact=email).exists():
             raise ValidationError('Уже есть пользователь с такой почтой')
 
         return email

@@ -81,7 +81,7 @@ class AppDetailView(DetailView):
 
         context['is_favorite'] = (
                 self.request.user.is_authenticated
-                and object.favorited_by.filter(app_id=self.request.user.pk).exists()
+                and self.object.favorited_by.filter(pk=self.request.user.pk).exists()
         )
 
 
@@ -201,6 +201,7 @@ def cheap_apps(request, min_price=None, max_price=None):
 @login_required
 def edit_app(request, app_id, app_name):
     app = get_object_or_404(App, id=app_id)
+    is_favorite = app.favorited_by.filter(pk=request.user.pk).exists()
     if not (
             request.user.has_perm('main.change_app') or request.user.is_staff or app.author_id == request.user.id
     ):
@@ -216,7 +217,7 @@ def edit_app(request, app_id, app_name):
     else:
         app_form = AppForm(instance=app)
 
-    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app})
+    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app, 'is_favorite':is_favorite})
 
 
 
@@ -303,15 +304,15 @@ class StorePasswordResetCompleteView(PasswordResetCompleteView):
 @require_POST
 def toggle_favorite_app(request, app_id, app_name):
     app = get_object_or_404(App, id=app_id)
-    print("APP:", app.id, app.name)
+
     if not request.user.is_authenticated:
-        login_url=reverse('main:index')
+        login_url=reverse('main:login')
         next_url=reverse('main:app_detail', args=[app.id, app_name] )
         return redirect(f"{login_url}?next={next_url}")
 
     if app.favorited_by.filter(id=request.user.id).exists():
         app.favorited_by.remove(request.user)
-        messages.success(request, f'Приложение {app.name} удалена из списка избранные')
+        messages.success(request, f'Приложение {app.name} удалено из списка избранные')
 
     else:
         app.favorited_by.add(request.user)
@@ -320,10 +321,13 @@ def toggle_favorite_app(request, app_id, app_name):
 
     return redirect('main:app_detail', app_id=app.id, app_name=app.name)
 
+
+@login_required
 def favorites(request):
     apps = (
-        request.user.favorite_apps.select_related('author', 'price', 'category').order_by('-created_at')
+        request.user.favorite_apps.select_related('author',  'category').order_by('-created_at')
     )
+
     return render(request, 'main/favorites.html', {'apps': apps})
 
 

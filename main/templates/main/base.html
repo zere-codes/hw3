@@ -17,6 +17,10 @@
             <a href="{% url 'main:my_apps' %}">Мои приложения</a>
        {%endif%}
 
+       {%if request.user.is_authenticated%}
+            <a href="{% url 'main:favorites' %}">Избранные({{favorites_count}})</a>
+       {%endif%}
+
 
                 {% if user.is_authenticated %}
             <span>Вы вошли как <strong>{{ user.username }}</strong></span>

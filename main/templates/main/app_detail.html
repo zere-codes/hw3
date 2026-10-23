@@ -55,9 +55,9 @@
 {% endif %}
 
 {% if user.is_authenticated %}
--
+<br>
 Добавить в избранные
--
+<br>
  <form method="post" action="{% url 'main:toggle_favorite_app' app.id app.name %}">
     {% csrf_token %}
     {% if is_favorite %}
