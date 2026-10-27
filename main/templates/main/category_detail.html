@@ -13,12 +13,9 @@
     <ul>
     {% for app in page_obj %}
         <li>
-            <a href="{% url 'main:app_detail' app.id app.name%}">{{ app.name }}</a> —
-            {% if app.price == 0 %}
-          Бесплатно
-          {% else %}
-          {{ app.price }}
-          {% endif %}
+            <a href="{{ app.get_absolute_url}}">{{ app.name }}</a> —
+            {{app.price_text}}
+
         </li>
     {% empty %}
         <li>В этой категории пока нет приложений</li>

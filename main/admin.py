@@ -11,6 +11,8 @@ class AppAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'price', 'created_at', 'weight_kb', 'category')
     search_fields = ('name', 'description')
     list_filter = ('category',)
+    exclude = ('created_at','favorited_by',)
+
 
 
 @admin.register(Review)

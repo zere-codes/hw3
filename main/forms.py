@@ -32,6 +32,7 @@ class ReviewForm(forms.ModelForm):
         }
 
     def clean(self):
+        cleaned_data = super().clean()
         recommended=self.cleaned_data.get('recommended')
         stars = self.cleaned_data.get('stars')
         comment=self.cleaned_data.get('comment')
@@ -42,6 +43,10 @@ class ReviewForm(forms.ModelForm):
             )
         if len(comment)>600:
             raise forms.ValidationError('Комментарий не может превышать 600 символов')
+
+        return cleaned_data
+
+
 
     def clean_stars(self):
         stars = self.cleaned_data.get('stars')
@@ -54,6 +59,8 @@ class ReviewForm(forms.ModelForm):
                 'Оценка должна быть от 1 до 5.'
             )
         return stars
+
+
 
 class AppForm(forms.ModelForm):
     class Meta:

@@ -10,7 +10,7 @@
     <ul>
     {% for app in apps %}
         <li>
-            <strong><a href="{% url 'main:app_detail' app.id app.name %}">{{app.name}}</a></strong> — {{ app.category }}<br>
+            <strong><a href="{{app.get_absolute_url}}">{{app.name}}</a></strong> — {{ app.category }}<br>
 
             {%if app.icon%}
                 <p><img src="{{app.icon.url}}" alt="{{app.name}}" class ='small-icon'></p>
@@ -21,11 +21,7 @@
             <br>
             Размер - {{app.weight_unit}}
             <br>
-             {% if app.price == 0 %}
-                Бесплатно
-            {% else %}
-                {{ app.price }} $
-            {% endif %}
+             {{app.price_text}}
             <br>
             добавлено {{ app.created_at|date:"d.m.Y" }}
         </li>

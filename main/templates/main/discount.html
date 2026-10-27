@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Распродажа - AppStore{% endblock %}
+
+{% block content %}
+    <h2>Распродажа по категориям</h2>
+
+    <p>Кнопка снижает цену каждого платного приложения на 10% в определенной категории. </p>
+
+
+    <form method="post" action="{% url 'main:discount' %}">
+        {% csrf_token %}
+        <label for="category">Категория:</label>
+        <select name="category" id="category" required>
+            {% for category in categories %}
+                <option value="{{ category.pk }}">
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Снизить цены</button>
+    </form>
+{% endblock %}
+
+
+

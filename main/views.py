@@ -1,18 +1,18 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
 from main.models import App, Category, Review
-from django.db.models import Q
+from django.db.models import Q, Avg, Count
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
 from .forms import ReviewForm, AppForm, UserRegistrationForm
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy
+
 from django.contrib import messages
 from django.contrib.auth.views import (
     LoginView,
@@ -81,7 +81,7 @@ class AppDetailView(DetailView):
 
         context['is_favorite'] = (
                 self.request.user.is_authenticated
-                and self.object.favorited_by.filter(pk=self.request.user.pk).exists()
+                and self.object.favorited_by.filter(id=self.request.user.pk).exists()
         )
 
 
@@ -105,6 +105,7 @@ def add_review(request, app_id, app_name):
     {
         'reviews': reviews,
         'app': app,
+        'app_form': AppForm(instance=app),
         'form': form,
         'is_favorite': (request.user.is_authenticated and app.favorited_by.filter(pk=request.user.pk).exists() ),
         })
@@ -331,5 +332,22 @@ def favorites(request):
     return render(request, 'main/favorites.html', {'apps': apps})
 
 
+@login_required
+def discount(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Распродажу может запустить только персонал')
+        return redirect('main:index')
 
+
+    if request.method == 'POST':
+        category_id = int(request.POST.get('category'))
+        category = Category.objects.get(pk=category_id)
+
+        updated = App.discount_incategory(category_id,10)
+
+        messages.success(request, f"Скидка 10% применена к платным приложениям в категории' {category.name}': {updated}")
+        return redirect('main:index')
+
+
+    return render(request, 'main/discount.html', {'categories': Category.objects.all(),})
 

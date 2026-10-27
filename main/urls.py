@@ -48,5 +48,7 @@ urlpatterns=[
 
     path('favorites/', views.favorites, name='favorites'),
     path('app/<int:app_id>/<str:app_name>/favorite/', views.toggle_favorite_app, name='toggle_favorite_app'),
+
+    path('discount/', views.discount, name='discount'),
 ]
 

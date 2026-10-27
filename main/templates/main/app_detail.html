@@ -33,11 +33,7 @@
 Размер - {{app.weight_unit}}
 <p>Добавлено: {{ app.created_at|date:"d.m.Y H:i" }}</p>
 
-Автор - {%if app.author%}
-            {{app.author.username}}
-        {%else%}
-            Не указан
-        {%endif%}
+Автор - {{app.author_text}}
 {% if user.is_authenticated%}
     {% if user.is_staff or app.author_id == user.id or perms.main.change_app  %}
     <section>
@@ -72,6 +68,14 @@
 {%endif%}
 
 <h3>Отзывы</h3>
+{% if app.count_rating %}
+    Средняя оценка - {{app.average_rating}}
+<br>
+    Всего отзывов:{{ app.count_rating }}
+
+<hr>
+{%endif%}
+
 {% for review in app.review_set.all %}
 <strong>{{ review.username }}</strong> — Приложение:{{ review.app }}<br>
             <br>
@@ -91,7 +95,7 @@
         <li>Отзывов пока нет</li>
 {% endfor%}
 
-<p>Всего отзывов:{{ app.review_set.count }}</p>
+
 
 <br>
 {% if user.is_authenticated %}

@@ -8,9 +8,9 @@
 <ul>
  {% for app in apps %}
         <li>
-            <a href="{% url 'main:app_detail' app.id app.name %}">{{ app.name }}</a>
+            <a href="{{app.get_absolute_url}}">{{ app.name }}</a>
 
-            автор: {% if app.author %}{{ app.author.username }}{% else %}не указан{% endif %}
+            автор: {{app.author_text}}
         </li>
   {% empty %}
     <li>В избранном пока пусто. Откройте карточку приложения и нажмите «В избранное».</li>
