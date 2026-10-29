@@ -13,6 +13,8 @@ from django.views.generic import TemplateView, ListView, DetailView
 from .forms import ReviewForm, AppForm, UserRegistrationForm
 from django.contrib.auth import login
 
+from django.db import transaction
+
 from django.contrib import messages
 from django.contrib.auth.views import (
     LoginView,
@@ -166,12 +168,12 @@ def category_detail(request, category_id):
 
 @require_GET
 def free(request):
-    apps=App.objects.filter(price=0)
+    apps=App.objects.free()
     return render(request, 'main/free.html' , {'apps': apps})
 
 @require_GET
 def new(request):
-    apps = App.objects.order_by('-created_at')
+    apps = App.objects.new()
     paginator = Paginator(apps, 3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -188,9 +190,9 @@ def new(request):
 @require_GET
 def cheap_apps(request, min_price=None, max_price=None):
     if min_price is not None:
-        apps = App.objects.filter(price__gte=min_price)
+        apps = App.objects.expensive(min_price)
     elif max_price is not None:
-        apps = App.objects.filter(price__lte=max_price)
+        apps = App.objects.cheap(max_price)
 
     paginator = Paginator(apps, 3)
     page_number = request.GET.get('page')
@@ -351,3 +353,28 @@ def discount(request):
 
     return render(request, 'main/discount.html', {'categories': Category.objects.all(),})
 
+
+@login_required
+def close_category(request, category_id):
+    if not request.user.is_staff:
+        messages.error(request, 'Категории может закрывать только персонал ')
+        return redirect('main:index')
+    source = get_object_or_404(Category, pk=category_id)
+    targets = Category.objects.exclude(pk=category_id)
+    if request.method == 'POST':
+        target_id = request.POST.get('target_id')
+
+        if not target_id or not target_id.isdigit():
+            messages.error(request, 'Нужно выбрать категорию')
+            return redirect('main:close_category', category_id=source.pk)
+        try:
+            target = get_object_or_404(Category, pk=target_id)
+            App.objects.move_to_category(source, target)
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect('main:close_category', category_id=source.pk)
+        return redirect('main:category', category_id=target.pk)
+    return render(request, 'main/close_category.html', {
+        'source': source,
+        'targets': targets
+    })

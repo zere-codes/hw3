@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Закрыть категорию - AppStore{% endblock %}
+
+{% block content %}
+<h2>Закрыть категорию «{{ source.name }}»</h2>
+
+{%if targets%}
+<form method="post" action="{% url 'main:close_category' source.pk %}">
+{% csrf_token %}
+<label for="target_id">Перенести в:</label>
+
+<select id="target_id" name="target_id">
+    {% for category in targets %}
+    <option value="{{ category.pk }}">{{ category.name }} ( {{ category.pk }})</option>
+    {% endfor %}
+</select>
+<button type="submit">Закрыть и перенести</button>
+</form>
+
+
+{% else %}
+<p>Других категории, чтобы перенести приложения нет. Создайте новую в админке</p>
+{% endif %}
+{% endblock %}
+
+
+

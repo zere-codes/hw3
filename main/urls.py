@@ -50,5 +50,7 @@ urlpatterns=[
     path('app/<int:app_id>/<str:app_name>/favorite/', views.toggle_favorite_app, name='toggle_favorite_app'),
 
     path('discount/', views.discount, name='discount'),
+    path('category/<int:category_id>/close/', views.close_category, name='close_category'),
+
 ]
 
