@@ -27,13 +27,11 @@ class Category(models.Model):
 
 class AppQuerySet(models.QuerySet):
 
-    def paid(self):
-        return self.filter(price__gt=0)
     def cheap(self, max_price):
-        return self.paid().filter(price__lt=max_price)
+        return self.filter(price__lt=max_price)
 
     def expensive(self, min_price):
-        return self.paid().filter(price__gt=min_price)
+        return self.filter(price__gt=min_price)
 
     def new(self):
         return self.order_by('-created_at')
@@ -67,6 +65,7 @@ class App(models.Model):
     average_rating = models.DecimalField(default=0, editable=False, max_digits=2, decimal_places=1)
     count_rating = models.IntegerField(default=0, editable=False)
     objects = AppQuerySet.as_manager()
+    added_to_cart = models.ManyToManyField(User,through='ShoppingCart',related_name='apps_in_cart',)
 
     def __str__(self):
         return self.name
@@ -97,6 +96,26 @@ class App(models.Model):
         else:
             return "Не указан"
 
+
+
+
+
+
+
+    def added_cart(self, user):
+        if not user.is_authenticated:
+            return None
+        return self.in_cart.filter(user=user).first()
+
+
+
+
+
+
+
+
+
+
     @classmethod
     def discount_incategory(cls, category_id, percentage):
         if type(percentage) is not int:
@@ -109,6 +128,24 @@ class App(models.Model):
             app.price=(app.price * (Decimal("100") - Decimal(percentage))/ Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         return cls.objects.bulk_update(paid_apps_incategory, ['price'])
 
+
+
+class ShoppingCart(models.Model):
+    app = models.ForeignKey(App, on_delete=models.CASCADE, related_name='in_cart')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='in_cart')
+    add_time = models.DateTimeField(auto_now_add=True)
+    price_when_added = models.DecimalField(max_digits=6, decimal_places=2,  editable=False)
+
+    def __str__(self):
+        return f"{self.user}--> {self.app}"
+
+    def price_label(self):
+        if self.price_when_added == 0:
+            return 'Бесплатно'
+        return self.price_when_added
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['user', 'app'], name='cart_unique_user_app'),]
 
 
 

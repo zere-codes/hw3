@@ -5,7 +5,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 # Create your views here.
-from main.models import App, Category, Review
+from main.models import App, Category, Review, ShoppingCart
 from django.db.models import Q, Avg, Count
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -14,7 +14,7 @@ from .forms import ReviewForm, AppForm, UserRegistrationForm
 from django.contrib.auth import login
 
 from django.db import transaction
-
+from django.db.models import Sum
 from django.contrib import messages
 from django.contrib.auth.views import (
     LoginView,
@@ -85,6 +85,9 @@ class AppDetailView(DetailView):
                 self.request.user.is_authenticated
                 and self.object.favorited_by.filter(id=self.request.user.pk).exists()
         )
+        context['in_cart'] = (
+            self.object.added_cart(self.request.user)
+        )
 
 
         return context
@@ -146,10 +149,10 @@ def category_detail(request, category_id):
     q = request.GET.get('q', '')
 
     if q:
-        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q), category=category)
+        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q).defer('description'), category=category)
 
     else:
-        apps = App.objects.order_by('-created_at').filter(category=category)
+        apps = App.objects.order_by('-created_at').filter(category=category).defer('description')
 
     paginator = Paginator(apps, 4)
     page_number = request.GET.get('page')
@@ -220,7 +223,9 @@ def edit_app(request, app_id, app_name):
     else:
         app_form = AppForm(instance=app)
 
-    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app, 'is_favorite':is_favorite})
+    in_cart = app.added_cart(request.user)
+
+    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app, 'is_favorite':is_favorite, 'in_cart':in_cart})
 
 
 
@@ -334,6 +339,11 @@ def favorites(request):
     return render(request, 'main/favorites.html', {'apps': apps})
 
 
+
+
+
+
+
 @login_required
 def discount(request):
     if not request.user.is_staff:
@@ -378,3 +388,45 @@ def close_category(request, category_id):
         'source': source,
         'targets': targets
     })
+
+
+
+
+@require_POST
+def add_to_cart(request, app_id):
+    app = get_object_or_404(App, id=app_id)
+    if not request.user.is_authenticated:
+        login_url = reverse('main:login')
+        return redirect(f'{login_url}?next={app.get_absolute_url()}')
+
+    if app.author_id == request.user.id:
+        messages.error(request, 'Это приложение было опубликовано вами. Вам не нужно его добавлять в корзину')
+        return redirect(app.get_absolute_url())
+    if app.added_cart(request.user) is not None:
+        messages.info(request, f'Вы уже добавили это приложение в корзину')
+        return redirect(app.get_absolute_url())
+
+    app.added_to_cart.add(request.user, through_defaults={'price_when_added': app.price})
+    messages.success(request, f'{app.name} теперь у вас в корзине')
+    return redirect(app.get_absolute_url())
+
+
+
+@login_required
+def shopping_cart(request):
+    apps = (ShoppingCart.objects.filter(user=request.user).select_related('app')
+        .only('price_when_added', 'add_time','app__id', 'app__name', 'app__price')
+        .order_by('-add_time')
+    )
+    summa = apps.aggregate(summa=Sum('app__price'))['summa'] or 0
+    number=apps.count()
+    return render(request, 'main/shopping_cart.html', {
+        'in_cart': apps,
+        'summa': summa,
+        'number': number,
+    })
+
+
+
+
+

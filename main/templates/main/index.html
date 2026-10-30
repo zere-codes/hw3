@@ -31,6 +31,14 @@
              {{app.price_text}}
             <br>
             добавлено {{ app.created_at|date:"d.m.Y" }}
+            <br>
+            {% if app.count_rating %}
+            Средняя оценка - {{app.average_rating}}<br>
+            Количество оценок - {{app.count_rating}}
+            {% else %}
+            оценок нет
+            {% endif %}
+
 
 
         </li>

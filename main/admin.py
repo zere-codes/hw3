@@ -1,7 +1,7 @@
 
 # Register your models here.
 from django.contrib import admin
-from .models import Category, App, Review
+from .models import Category, App, Review, ShoppingCart
 
 admin.site.register(Category)
 
@@ -21,3 +21,7 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('username', 'app')
     list_filter = ('stars',)
 
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'app', 'price_when_added', 'add_time')
+    list_filter = ('app',)

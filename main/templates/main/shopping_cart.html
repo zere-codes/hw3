@@ -1,0 +1,24 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Ваша корзина - AppStore{% endblock %}
+
+{% block content %}
+    <h2>В корзине:</h2>
+
+    <ul>
+    {% for item in in_cart %}
+        <li>
+        <strong><a href="{{ item.app.get_absolute_url }}">{{ item.app.name }}</a></strong>
+            <br>
+        Время добавления в корзину{{ item.add_time|date:"d.m.Y" }}<br>
+        Цена когда вы добавили в корзину: {{ item.price_label }}<br>
+        Цена на данный момент: {{ item.app.price_text}}
+        </li>
+    {% empty %}
+        <li>Корзина пока пустая.</li>
+    {% endfor %}
+    </ul>
+
+    <p>Общая сумма на данный момент: {{ summa|floatformat:2 }}</p>
+    <p>Приложений в корзине: {{number}}</p>
+{% endblock %}

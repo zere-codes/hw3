@@ -52,5 +52,8 @@ urlpatterns=[
     path('discount/', views.discount, name='discount'),
     path('category/<int:category_id>/close/', views.close_category, name='close_category'),
 
+    path('add_to_cart/<int:app_id>/', views.add_to_cart, name='add_to_cart'),
+    path('shopping_cart/', views.shopping_cart, name='shopping_cart'),
+
 ]
 

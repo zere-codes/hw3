@@ -67,6 +67,23 @@
 
 {%endif%}
 
+
+{% if in_cart %}
+<p>Это приложение добавлено в вашу корзину. <a href="{%url 'main:shopping_cart'%}">Перейти в корзину</a></p>
+{% elif user.is_authenticated and app.author_id == user.id %}
+<p>Это ваше приложение, добавлять в корзину не нужно</p>
+
+{% elif not user.is_authenticated %}
+<p><a href="{% url 'main:login' %}?next={{ request.path }}">Войдите, чтобы добавить приложение в корзину</a></p>
+
+{% else %}
+    <form method="post" action="{% url 'main:add_to_cart' app.id %}">
+        {% csrf_token %}
+        <button type="submit">Добавить в корзину</button>
+    </form>
+{% endif %}
+
+<hr>
 <h3>Отзывы</h3>
 {% if app.count_rating %}
     Средняя оценка - {{app.average_rating}}
