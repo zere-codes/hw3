@@ -101,3 +101,21 @@ class UserRegistrationForm(UserCreationForm):
 
 
 
+class DateFilterForm(forms.Form):
+    from_date =forms.DateField(label='С', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    to_date = forms.DateField(label='До', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        from_date = cleaned_data.get('from_date')
+        to_date = cleaned_data.get('to_date')
+        if from_date and to_date and from_date > to_date:
+            raise forms.ValidationError('Дата "c" не может быть позже даты "до"')
+        return cleaned_data
+
+
+
+
+
+

@@ -10,7 +10,7 @@ from django.db.models import Q, Avg, Count
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
-from .forms import ReviewForm, AppForm, UserRegistrationForm
+from .forms import ReviewForm, AppForm, UserRegistrationForm, DateFilterForm
 from django.contrib.auth import login
 
 from django.db import transaction
@@ -420,13 +420,27 @@ def shopping_cart(request):
         .only('price_when_added', 'add_time','app__id', 'app__name', 'app__price')
         .order_by('-add_time')
     )
-    summa = apps.aggregate(summa=Sum('app__price'))['summa'] or 0
     number=apps.count()
+
+
+    form = DateFilterForm(request.GET)
+    if form.is_valid():
+        from_date = form.cleaned_data['from_date']
+        to_date = form.cleaned_data['to_date']
+        if from_date is not None:
+            apps = apps.filter(add_time__gte=from_date)
+        if to_date is not None:
+            apps = apps.filter(add_time__lte=to_date)
+
+    summa=apps.aggregate(summa=Sum('app__price'))['summa'] or 0
+
     return render(request, 'main/shopping_cart.html', {
         'in_cart': apps,
         'summa': summa,
         'number': number,
+        'form': form,
     })
+
 
 
 
