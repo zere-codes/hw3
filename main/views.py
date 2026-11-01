@@ -105,6 +105,7 @@ def add_review(request, app_id, app_name):
     if request.user.is_authenticated and 'username' in form.fields:
         form.fields.pop('username')
 
+    in_cart=app.added_cart(request.user)
     reviews = app.review_set.order_by('-created_at')
     return render(request, 'main/app_detail.html',
     {
@@ -113,6 +114,7 @@ def add_review(request, app_id, app_name):
         'app_form': AppForm(instance=app),
         'form': form,
         'is_favorite': (request.user.is_authenticated and app.favorited_by.filter(pk=request.user.pk).exists() ),
+        'in_cart': in_cart
         })
 
 
@@ -149,7 +151,7 @@ def category_detail(request, category_id):
     q = request.GET.get('q', '')
 
     if q:
-        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q).defer('description'), category=category)
+        apps = App.objects.filter(Q(name__icontains=q) | Q(description__icontains=q), category=category)
 
     else:
         apps = App.objects.order_by('-created_at').filter(category=category).defer('description')

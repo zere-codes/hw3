@@ -1,5 +1,5 @@
 {% extends 'main/base.html' %}
-
+{% load store_tags %}
 {% block title %}Главная — AppStore{% endblock %}
 
 {% block content %}
@@ -33,8 +33,8 @@
             добавлено {{ app.created_at|date:"d.m.Y" }}
             <br>
             {% if app.count_rating %}
-            Средняя оценка - {{app.average_rating}}<br>
-            Количество оценок - {{app.count_rating}}
+            Средняя оценка - {{app.average_rating|stars}}<br>
+             {{app.count_rating|reviews_count}}
             {% else %}
             оценок нет
             {% endif %}

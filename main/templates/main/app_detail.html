@@ -1,5 +1,5 @@
 {% extends 'main/base.html' %}
-
+{% load store_tags %}
 {% block title %}{{ app.name }} — AppStore{% endblock %}
 
 {% block content %}
@@ -86,9 +86,9 @@
 <hr>
 <h3>Отзывы</h3>
 {% if app.count_rating %}
-    Средняя оценка - {{app.average_rating}}
+    Средняя оценка - {{app.average_rating|stars}}
 <br>
-    Всего отзывов:{{ app.count_rating }}
+    {{ app.count_rating|reviews_count }}
 
 <hr>
 {%endif%}

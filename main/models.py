@@ -28,10 +28,10 @@ class Category(models.Model):
 class AppQuerySet(models.QuerySet):
 
     def cheap(self, max_price):
-        return self.filter(price__lt=max_price)
+        return self.filter(price__lte=max_price)
 
     def expensive(self, min_price):
-        return self.filter(price__gt=min_price)
+        return self.filter(price__gte=min_price)
 
     def new(self):
         return self.order_by('-created_at')

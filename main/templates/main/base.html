@@ -1,10 +1,12 @@
 {% load static %}
+{% load store_tags %}
 
 <link rel="stylesheet" href="{% static 'main/style.css' %}">
     <title>{% block title %}AppStore{% endblock %}</title>
    <nav>
             <a href="{% url 'main:index' %}">Главная</a>
             <a href="{% url 'main:about' %}">О магазине</a>
+
             <a href="{% url 'main:reviews' %}">Отзывы</a>
             <a href="{% url 'main:free' %}">Бесплатные</a>
             <a href="{% url 'main:new' %}">Новинки</a>
@@ -42,6 +44,7 @@
 
 
         <p class="nav_categories">
+
         Категории:
         {% for category in categories %}
             <a href="{% url 'main:category' category.id %}"
@@ -63,9 +66,11 @@
     {% block content %}
     {% endblock %}
 
+
+{{app.count_rating}}!!!!!!!
 </body>
 
 <footer>
-        <p>В магазине {{ apps_total }} приложении; {{ categories_total }} категории</p>
+        <p>В магазине {{ apps_total|count_app }} приложении; {{ categories_total|category_count }} категории</p>
     </footer>
 </html>
