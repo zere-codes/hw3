@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Названия категорий  - AppStore{% endblock %}
+
+{% block content %}
+    <h2>Названия категорий</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        {% for form in formset %}
+            <h3>{{ form.instance.name }}</h3>
+            {{ form.as_p }}
+        {% empty %}
+            <p>Категорий пока нет</p>
+        {% endfor %}
+
+        <button type="submit">Сохранить названия</button>
+    </form>
+
+    <p><a href="{% url 'main:index' %}">Назад к главной странице</a></p>
+{% endblock %}

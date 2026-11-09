@@ -1,4 +1,7 @@
 from django import template
+
+from main.models import App
+
 register = template.Library()
 
 

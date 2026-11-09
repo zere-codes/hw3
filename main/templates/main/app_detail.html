@@ -86,7 +86,7 @@
 <hr>
 <h3>Отзывы</h3>
 {% if app.count_rating %}
-    Средняя оценка - {{app.average_rating|stars}}
+    Средняя оценка - {{app.average_rating|stars}} {{app.average_rating}}
 <br>
     {{ app.count_rating|reviews_count }}
 

@@ -33,7 +33,7 @@
             добавлено {{ app.created_at|date:"d.m.Y" }}
             <br>
             {% if app.count_rating %}
-            Средняя оценка - {{app.average_rating|stars}}<br>
+            Средняя оценка - {{app.average_rating|stars}} {{app.average_rating}}<br>
              {{app.count_rating|reviews_count}}
             {% else %}
             оценок нет

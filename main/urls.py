@@ -12,6 +12,8 @@ urlpatterns=[
     path('about/',views.AboutView.as_view(), name='about'),
     path('reviews/', views.reviews, name='reviews'),
     path('category/<int:category_id>/', views.category_detail, name='category'),
+    path('category/edit/', views.category_names, name='category_names'),
+
     path('app_detail/<int:app_id>/<str:app_name>/', views.AppDetailView.as_view(), name='app_detail'),
     path('free/', views.free, name='free'),
     path('new/', views.new, name='new'),

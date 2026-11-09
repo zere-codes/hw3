@@ -18,7 +18,7 @@
         <li>
         <strong><a href="{{ item.app.get_absolute_url }}">{{ item.app.name }}</a></strong>
             <br>
-        Время добавления в корзину{{ item.add_time|date:"d.m.Y" }}<br>
+        Время добавления в корзину: {{ item.add_time|date:"d.m.Y" }}<br>
         Цена когда вы добавили в корзину: {{ item.price_label}}<br>
         Цена на данный момент: {{ item.app.price_text}}
         </li>

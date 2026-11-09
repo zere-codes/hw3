@@ -15,7 +15,7 @@ from django.contrib.auth import login
 
 from django.db import transaction
 from django.db.models import Sum
-from django.contrib import messages
+
 from django.contrib.auth.views import (
     LoginView,
     LogoutView,
@@ -25,7 +25,8 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
 )
 from django.urls import reverse, reverse_lazy
-
+from django.contrib import messages
+from django.forms import modelformset_factory
 
 @require_GET
 def hw(request):
@@ -168,6 +169,34 @@ def category_detail(request, category_id):
         'q': q,
     })
 
+CategoryNameFormSet = modelformset_factory(
+    Category,
+    fields=['name'],
+    labels={'name': 'Название'},
+    extra=0,
+    edit_only=True,
+)
+
+
+
+@login_required
+def category_names(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Названия категории может менять только персонал ')
+        return redirect('main:index')
+
+    categories = Category.objects.all()
+    if request.method == 'POST':
+        formset = CategoryNameFormSet(request.POST, queryset=categories)
+        if formset.is_valid():
+            saved = formset.save()
+            messages.success(request, f'Изменены названия у {len(saved)} категорий')
+            return redirect('main:index')
+    else:
+        formset = CategoryNameFormSet(queryset=categories)
+    return render(request, 'main/edit.html', {'formset': formset})
+
+
 
 
 
@@ -279,6 +308,9 @@ def add_app(request):
 def my_apps(request):
     apps = App.objects.filter( author=request.user).order_by('-created_at')
     return render(request, 'main/my_apps.html', {'apps': apps})
+
+
+
 
 
 
@@ -428,9 +460,9 @@ def shopping_cart(request):
         from_date = form.cleaned_data['from_date']
         to_date = form.cleaned_data['to_date']
         if from_date is not None:
-            apps = apps.filter(add_time__gte=from_date)
+            apps = apps.filter(add_time__date__gte=from_date)
         if to_date is not None:
-            apps = apps.filter(add_time__lte=to_date)
+            apps = apps.filter(add_time__date__lte=to_date)
 
     summa=apps.aggregate(summa=Sum('app__price'))['summa'] or 0
 
@@ -440,7 +472,6 @@ def shopping_cart(request):
         'number': number,
         'form': form,
     })
-
 
 
 
