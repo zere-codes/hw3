@@ -12,6 +12,9 @@ from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView
 from .forms import ReviewForm, AppForm, UserRegistrationForm, DateFilterForm
 from django.contrib.auth import login
+from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 from django.db import transaction
 from django.db.models import Sum
@@ -146,6 +149,9 @@ def reviews(request):
     return render(request, 'main/reviews.html', {'reviews': reviews})
 
 
+
+@cache_page(60*2)
+@vary_on_cookie
 @require_GET
 def category_detail(request, category_id):
     category = get_object_or_404(Category, id=category_id)
