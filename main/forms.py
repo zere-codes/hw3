@@ -29,6 +29,11 @@ class ReviewForm(forms.ModelForm):
                 'min': 1,
                 'max': 5,
             }),
+
+
+        }
+        help_texts = {
+            'comment': '[b]жирный шрифт[/b]'
         }
 
     def clean(self):

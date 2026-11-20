@@ -1,13 +1,14 @@
 {% extends 'main/base.html' %}
+{% load django_bootstrap5 %}
 
 {% block title %}Публикация приложения - AppStore{% endblock %}
 
 {% block content %}
     <form method="post" action="{% url 'main:add_app' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+         {% bootstrap_form form %}
 
-        <button type="submit">Добавить</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
 
 {% endblock %}

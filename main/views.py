@@ -191,7 +191,7 @@ def category_names(request):
         messages.error(request, 'Названия категории может менять только персонал ')
         return redirect('main:index')
 
-    categories = Category.objects.all()
+    categories = Category.objects.order_by('name')
     if request.method == 'POST':
         formset = CategoryNameFormSet(request.POST, queryset=categories)
         if formset.is_valid():
@@ -251,9 +251,9 @@ def edit_app(request, app_id, app_name):
         messages.error(request, 'Редактировать приложение может только её автор')
         return redirect('main:app_detail', app_id=app.id, app_name=app_name)
     if request.method == 'POST' :
-        app_form = AppForm(request.POST, request.FILES, instance=app)
-        if app_form.is_valid():
-            app = app_form.save()
+        form = AppForm(request.POST, request.FILES, instance=app)
+        if form.is_valid():
+            app = form.save()
             return redirect('main:app_detail',app_id=app.id, app_name=app_name)
 
 
@@ -262,7 +262,7 @@ def edit_app(request, app_id, app_name):
 
     in_cart = app.added_cart(request.user)
 
-    return render(request,'main/app_detail.html', {'app_form': app_form, 'app': app, 'is_favorite':is_favorite, 'in_cart':in_cart})
+    return render(request,'main/app_detail.html', {'form': form, 'app': app, 'is_favorite':is_favorite, 'in_cart':in_cart})
 
 
 

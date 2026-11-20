@@ -1,5 +1,7 @@
 {% extends 'main/base.html' %}
 {% load store_tags %}
+{% load django_bootstrap5 %}
+{%load bbcode_tags%}
 {% block title %}{{ app.name }} — AppStore{% endblock %}
 
 {% block content %}
@@ -99,7 +101,7 @@
             Звезды - {{review.stars}} из 5
             <br>
              {% if review.comment %}
-               {{ review.comment }}
+               {% bbcode review.comment %}
             {% endif %}
             <br>
             {% if review.recommended == 'да' %}
@@ -121,10 +123,8 @@
 
         <form method="post" action="{% url 'main:add_review' app.id app.name%}">
             {% csrf_token %}
-
-            {{ form.as_p }}
-
-            <button type="submit">Отправить отзыв</button>
+            {% bootstrap_form form%}
+            <button type="submit" class="btn btn-primary">Отправить отзыв</button>
         </form>
     </section>
 {%else %}
