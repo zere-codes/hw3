@@ -5,20 +5,37 @@ from django.core.mail import message
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, FileExtensionValidator
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction
 
+from django.urls import reverse
+from pathlib import Path
+from uuid import uuid4
+from easy_thumbnails.fields import ThumbnailerImageField
 
 # Create your models here.
 
 
+def icon_upload(instance, filename):
+    ext=Path(filename).suffix.lower()
+    return f"categories/{uuid4().hex}{ext}"
 
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
+    icon = ThumbnailerImageField(
+        upload_to=icon_upload,
+        blank=True,
+        resize_source={'size': (32, 32)},
+        validators=[FileExtensionValidator(
+            allowed_extensions=['png', 'jpg', 'jpeg', 'webp'],
+            message='Иконка должна быть в формате: png, jpg, jpeg, webp'
+        )
+        ],
 
+    )
     def __str__(self):
         return self.name
 
