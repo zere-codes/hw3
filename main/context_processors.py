@@ -1,6 +1,6 @@
 from django.db.models import Count
 
-from main.models import Category, App, Review
+from main.models import Category, App, Review, User
 
 
 def nav_categories(request):
@@ -26,4 +26,5 @@ def favorites_count(request):
         count = 0
 
     return {'favorites_count': count}
+
 

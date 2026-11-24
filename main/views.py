@@ -9,7 +9,7 @@ from main.models import App, Category, Review, ShoppingCart
 from django.db.models import Q, Avg, Count
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, View
 from .forms import ReviewForm, AppForm, UserRegistrationForm, DateFilterForm
 from django.contrib.auth import login
 from django.views.decorators.http import require_GET, require_POST
@@ -479,7 +479,19 @@ def shopping_cart(request):
         'form': form,
     })
 
+class DevsView(View):
+    def get(self, request):
+        developers=User.objects.annotate(apps_uploaded=Count('apps')).filter(apps_uploaded__gt=0).order_by('-apps_uploaded')
+        return render(request, 'main/devs.html', {
+            'developers': developers,
+        })
 
 
-
-
+class DevView(View):
+    def get(self, request, username):
+        developer = get_object_or_404(User, username=username)
+        apps = App.objects.filter(author=developer)
+        return render(request, 'main/developer.html',{
+            'developer': developer,
+            'apps': apps,
+        })

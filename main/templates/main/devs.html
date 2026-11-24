@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Разработчики - AppStore{% endblock %}
+
+{% block content %}
+
+{% for developer in developers%}
+    <p>
+        <a href="{%url 'main:dev' developer.username%}">{{developer.username}}</a>
+    : {{developer.apps_uploaded}} приложений
+    </p>
+
+{%empty%}
+    Пока нет разработчиков
+{% endfor %}
+{% endblock %}
